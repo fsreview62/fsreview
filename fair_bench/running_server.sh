@@ -1,0 +1,1 @@
+python3 launch_server.py --model-setting S1 --num-adapter 1379 --num-token 100000 --scheduler lshare_fair --rate-limit 500 --enable-abort > ../../outputs/100000_requests/downsampled_data_10000_rows_first_arrivals.csv___lshare_fair___500___2000___avg.log
