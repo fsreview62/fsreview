@@ -1,0 +1,19 @@
+# ninja log v5
+0	17822	1728060231490445328	/mnt/azureml/cr/j/8ffbefea7b0744faba9ebef7717c8467/exe/wd/code/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/lora_ops.o	4a2cf74264a4a058
+0	30501	1728060244162393615	/mnt/azureml/cr/j/8ffbefea7b0744faba9ebef7717c8467/exe/wd/code/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/bgmv/bgmv_all.o	ed6fbf9805fa5091
+3	19044	1728164001170636507	/mnt/azureml/cr/j/e9b2c95c2e7242fa8b9a2da143a4f78e/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/lora_ops.o	299227cb8e98b436
+3	33275	1728164015398836693	/mnt/azureml/cr/j/e9b2c95c2e7242fa8b9a2da143a4f78e/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/bgmv/bgmv_all.o	1fe47bd61dd6d169
+4	19713	1728173687772993354	/mnt/azureml/cr/j/3faa5a8a4a4e439aadf1f5e0efb8dc27/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/lora_ops.o	2ea0e532dd7550e1
+3	34323	1728173702381199506	/mnt/azureml/cr/j/3faa5a8a4a4e439aadf1f5e0efb8dc27/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/bgmv/bgmv_all.o	d17222a82a8faa36
+4	18661	1728271138644481761	/mnt/azureml/cr/j/3faa5a8a4a4e439aadf1f5e0efb8dc27_3/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/lora_ops.o	7c6f59f8f1110ad7
+4	32943	1728271152924613753	/mnt/azureml/cr/j/3faa5a8a4a4e439aadf1f5e0efb8dc27_3/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/bgmv/bgmv_all.o	382f992a8d007a7e
+4	18669	1728361503291616273	/mnt/azureml/cr/j/3faa5a8a4a4e439aadf1f5e0efb8dc27_5/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/lora_ops.o	57f0258907405ae6
+4	32972	1728361517591599688	/mnt/azureml/cr/j/3faa5a8a4a4e439aadf1f5e0efb8dc27_5/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/bgmv/bgmv_all.o	19522d647e8470c8
+4	19009	1728816920921105664	/mnt/azureml/cr/j/5f0b0a4b7d4b4d85b4acbc4978d468e7/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/lora_ops.o	1e44a6bdfb8bea4b
+4	33289	1728816935189278330	/mnt/azureml/cr/j/5f0b0a4b7d4b4d85b4acbc4978d468e7/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/bgmv/bgmv_all.o	c94130259d5e5c9a
+6	18737	1729884451085071108	/mnt/azureml/cr/j/e9a8f1622b294ebcba7778fe0a0862cc_2/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/lora_ops.o	d4f1ea0fa5138f2d
+6	32764	1729884465101339547	/mnt/azureml/cr/j/e9a8f1622b294ebcba7778fe0a0862cc_2/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/bgmv/bgmv_all.o	b2aa7642ed9bfef1
+6	17928	1730279160454915768	/mnt/azureml/cr/j/d9e77f6883ec42e6a515d012e2b958af/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/lora_ops.o	f2810d8f8ec76bf7
+6	30138	1730279172655024220	/mnt/azureml/cr/j/d9e77f6883ec42e6a515d012e2b958af/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/bgmv/bgmv_all.o	41bf066042b1b4fb
+6	19575	1730284516428010766	/mnt/azureml/cr/j/e9a8f1622b294ebcba7778fe0a0862cc_7/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/lora_ops.o	cc8bd9e34fa741a6
+6	33720	1730284530560141909	/mnt/azureml/cr/j/e9a8f1622b294ebcba7778fe0a0862cc_7/exe/wd/FairServe/build/temp.linux-x86_64-cpython-310/slora/csrc/bgmv/bgmv_all.o	ad92aec75df2a2db

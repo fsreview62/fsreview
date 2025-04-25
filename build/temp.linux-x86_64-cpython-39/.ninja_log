@@ -1,0 +1,7 @@
+# ninja log v5
+0	13979	1721064548099450123	/home/cc/FairLLM/build/temp.linux-x86_64-cpython-39/slora/csrc/lora_ops.o	e3f990654ec089b1
+0	29112	1721064563223491659	/home/cc/FairLLM/build/temp.linux-x86_64-cpython-39/slora/csrc/bgmv/bgmv_all.o	8055d433a3ab7542
+3	13085	1721686084210837101	/home/cc/FairLLM/build/temp.linux-x86_64-cpython-39/slora/csrc/lora_ops.o	e3f990654ec089b1
+2	27936	1721686099046872069	/home/cc/FairLLM/build/temp.linux-x86_64-cpython-39/slora/csrc/bgmv/bgmv_all.o	8055d433a3ab7542
+3	13411	1725820080856895542	/home/cc/FairLLM/build/temp.linux-x86_64-cpython-39/slora/csrc/lora_ops.o	e3f990654ec089b1
+3	28124	1725820095552932838	/home/cc/FairLLM/build/temp.linux-x86_64-cpython-39/slora/csrc/bgmv/bgmv_all.o	8055d433a3ab7542
