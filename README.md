@@ -1,41 +1,6 @@
-# VTC Artifact for "Fairness in Serving Large Language Models [[paper](https://arxiv.org/abs/2401.00588)]"
+# FairServe Artifact
 Experiments instructions in `fair_bench/README.md` and `fair_bench/REVISION.md`.
 The prototype is build on top of S-LoRA, which is described below.
-
-
-# S-LoRA: Serving Thousands of Concurrent LoRA Adapters [[paper](https://arxiv.org/abs/2311.03285)][[code](https://github.com/S-LoRA/S-LoRA)]
-
-<p align="center">
-<img src="figures/serving_perf.png" alt="perf" width="700"/>
-</p>
-
-## Abstract
-The "pretrain-then-finetune" paradigm is commonly adopted in the deployment
-of large language models. Low-Rank Adaptation (LoRA), a parameter-efficient
-fine-tuning method, is often employed to adapt a base model to a multitude of
-tasks, resulting in a substantial collection of LoRA adapters derived from one
-base model. We observe that this paradigm presents significant opportunities
-for batched inference during serving. To capitalize on these opportunities, we
-present S-LoRA, a system designed for the scalable serving of many LoRA
-adapters. S-LoRA stores all adapters in the main memory and fetches the
-adapters used by the currently running queries to the GPU memory. To
-efficiently use the GPU memory and reduce fragmentation, S-LoRA proposes
-Unified Paging. Unified Paging uses a unified memory pool to manage dynamic
-adapter weights with different ranks and KV cache tensors with varying sequence
-lengths. Additionally, S-LoRA employs a novel tensor parallelism strategy and
-highly optimized custom CUDA kernels for heterogeneous batching of LoRA
-computation. Collectively, these features enable S-LoRA to serve thousands of
-LoRA adapters on a single GPU or across multiple GPUs with a small overhead.
-Compared to state-of-the-art libraries such as HuggingFace PEFT and vLLM (with
-naive support of LoRA serving), S-LoRA can improve the throughput by up to 4
-times and increase the number of served adapters by several orders of
-magnitude. As a result, S-LoRA enables scalable serving of many task-specific
-fine-tuned models and offers the potential for large-scale customized
-fine-tuning services.
-
-<p align="center">
-<img src="figures/overview.png" alt="overview" width="500"/>
-</p>
 
 ## Requirements
 * CUDA 11.8 compatible GPU
@@ -57,114 +22,66 @@ Make sure triton==2.1.0
 
 For more details on installing CUDA via conda, refer to the [CUDA Installation Guide by NVIDIA](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#conda-installation).
 
-## Example Run
-Real model weights
-```bash
-cd benchmarks
-python launch_server.py --num-adapter 100 --num-token 10000 --model-setting Real
-python run_exp.py --debug --model-setting Real
+
+## Instructions for Artifact Evaluation
+
+Hardware and software requirements:
+- One A10G(24GB) and one A100(80GB).
+- Ubuntu installed with Pytorch 2.1.2 and Triton 2.1.0 would be recommended.
+
+Install the S-LoRA runtime with VTC and baseline schedulers:
+```
+cd VTC-artifact
+pip install -e .
 ```
 
-Dummy weights
-```bash
-cd benchmarks
-python launch_server.py --num-adapter 100 --num-token 10000 --dummy
-python run_exp.py --debug
+# Running interaction and overload throttling
+1. Launch the server with Llama-2-7b on an AWS instance of A100 GPU using FairServe scheduler. Save the output to a file (example: outinteract) to get important info and track queues.
+
+```
+conda activate slora
+cd FairLLM/fair_bench
+python launch_server.py --num-adapter 25 --enable-abort --scheduler fs_fair_interaction_limit_expect --rate-limit 50 > outinteract
+
+```
+You can use other scheduler options for FairServe like fs_fair, fs_fair_user_limit, fs_fair_userapp_limit, fs_fair_overload_limit etc. for benchmarking. However, at the moment every approach is combined in fs_fair_interaction_limit_expect. To disable user throttling set the --rate-limit to be very high (something like 1000). Set the app limits in fair_bench/trace.py [line 201] in function generate_requests_uniform_real. Currently it is set to 100 for all apps. Also remember to set how many requests each user is going to have using the variable max_reqs_per_user inside the divide_reqs function. This will change depending on how your synthetic trace is designed. By default it is 1000 as the benchmark uses the synthetic_trace.csv file specified inside the divide_reqs function.
+
+In fair_bench/exp_suite.py, you can use different suites or create your own suites for benchmarking. For now we would use overload suite. The number of users is specified in adapters. If you want to work with two users, use adapters = [2]. You would also need to make sure that req_rate has request rates for all adapters or users. For example, if you are working with 50 users, then the req_rate could be req_rate = [np.random.uniform(3, 5, 50).tolist()]. 
+
+The default number of users that will be created is 20. If you want to create more users, then you need pass another argument --num-adapter and specify how many user you want to work with. Make sure that this argument is always greater than the number of adapters that you specify within the overload suite. The duration for that suite is 60 sec and req_rate = [3,3] means 3*60 = 180 requests will be sent for two clients per minute. The duration argument is currently redundant when you are using a trace. 
+
+To reproduce the fairness objective experiment set req_rate = [16,8]
+
+In another terminal run experiments with workloads.
+
+```
+python run_exp.py --suite overload --output FS/all_results_overload.jsonl > output_all_res_fs_1min_rr_8_16_userlimitinf_applimit100_3
 ```
 
-Test
-```bash
-cd test/test_e2e
-python launch_server.py
-python run_exp.py
+Once the run terminates, go to the first terminal window, and terminate the running server so that you can get the complete output in "outinteract".
+You can use the FS/all_results_overload.jsonl to plot different metrics like response time, throughput, etc. Plot functions are in fair_bench/plot.
+
+If you are timing your benchmark and don't want it to complete terminate the run in the middle. Open the output_all_res_fs_1min_rr_8_16_userlimitinf_applimit100_3 file which contains stats about the run. Get rid of all lines until you see request outputs. Those would follow this kind of output.
+
+```
+interaction_id 253 req_id 1002 request_start_time 1740005157.99 request_end_time 1740005160.28 req_time 0.4938392883012395 adapter_dir dummy-lora-7b-rank-8-1 prompt_len 50 output_len 50 sys_len 50 app 2 input99app 50 sys99app 50 output99app 50 priorityfactor 1 app_limit 100 request_latency 2.29 s, first_token_latency 0.84 s llmcalls: 1 llmcalls_made: 1
 ```
 
-## Methods
+Then you can perform analysis. For example, if you want to find the number of responses that completed for a particular user, then check for how many requests had llmcalls == llmcalls_made. Among these, subtract the number of requests where first_token_latency -1.00 s and llmcalls == llmcalls_made. You do a quick search. Assume you are using the synthetic_trace.csv file, then if you want the number of requests that completed for user 1, completed_responses_user1 = 4 x (Responses_with_lines("llmcalls: 4 llmcalls_made: 4") - Responses_with_lines("first_token_latency -1.00 s llmcalls: 4 llmcalls_made: 4"))
+completed_responses_user2 = Responses_with_lines("llmcalls: 1 llmcalls_made: 1") - Responses_with_lines("first_token_latency -1.00 s llmcalls: 1 llmcalls_made: 1")
 
-- Unified Paging: To reduce memory fragmentation and increase batch size, S-LoRA introduces a unified memory pool. This pool manages dynamic adapter weights and KV cache tensors by a unified paging mechanism.
-
-<p align="center">
-<img src="figures/unifiedpaging.png" alt="unifiedpaging" width="400"/>
-</p>
-
-- Heterogeneous Batching: To minimize the latency overhead when batching different adapters of varying ranks, S-LoRA employs highly optimized custom CUDA kernels. These kernels operate directly on non-contiguous memory and align with the memory pool design, facilitating efficient batched inference for added LoRA computation.
-
-- S-LoRA TP: To ensure effective parallelization across multiple GPUs, S-LoRA introduces a novel tensor parallelism strategy. This approach incurs minimal communication cost for the added LoRA computation compared to that of the base model. This is realized by scheduling communications on small intermediate tensors and fusing them with the communications of the base model.
-
-<p align="center">
-<img src="figures/slora_tp.png" alt="slora_tp" width="900"/>
-</p>
-
-## Evaluation
-
-### Settings
-
-Model Settings:
-| Setting | Base model | Hidden size | Adapter ranks |
-|---|---|---|---|
-| S1 | Llama-7B | 4096 | {8} |
-| S2 | Llama-7B | 4096 | {64, 32, 16, 8} |
-| S4 | Llama-13B | 5120 | {64, 32, 16} |
-| S5 | Llama-30B | 7168 | {32} |
-| S6 | Llama-70B | 8192 | {64} |
-
-Baselines:
-
-PEFT stands for HuggingFace PEFT: We build a server using it that batches single adapter requests and switches adapter weights between batches.
-
-vLLM-packed: Because vLLM does not support LoRA, we merge the LoRA weights into the base model and serve the multiple versions of the merged weights separately. To serve m LoRA adapters, we run m vLLM workers on a single GPU, where multiple workers are separate processes managed by NVIDIA MPS.
-
-S-LoRA-no-unify-mem: S-LoRA without the Unified Paging.
-
-S-LoRA-bmm: S-LoRA without Unified Paging and customized kernels. It copies the adapter weights to continuous memory space and performs batched matrix multiplication with padding.
-
-Please see our paper about the trace for synthetic workloads.
-
-### Results
-
-- We compare S-LoRA with both vLLM-packed and HuggingFace PEFT for serving many LoRA adapters.
-
-<p align="center">
-<img src="figures/vllm_and_peft.png" alt="vllm_and_peft" width="400"/>
-</p>
-
-- Comparing with own variants.
-
-<p align="center">
-<img src="figures/synthetic.png" alt="synthetic" width="800"/>
-</p>
-
-- We test the scalability of our tensor parallelism strategy.
-
-<p align="center">
-<img src="figures/tp.png" alt="tp" width="600"/>
-</p>
+Plotting files use functions from fair_bench/visualize.py. So in case we want to plot metrics like service received we need to make those changes over there as our definition of service is different compared to VTC.
 
 ## Acknowledgment
-SLoRA is build on top of [LightLLM](https://github.com/ModelTC/lightllm.git).
-
-We also learned a lot from the following projects when developing S-LoRA.
-- [punica](https://github.com/punica-ai/punica.git)
-- [PEFT](https://github.com/huggingface/peft.git)
-- [vLLM](https://github.com/vllm-project/vllm)
+FairServe is build on top of [S-LoRA](https://github.com/S-LoRA/S-LoRA).
 
 
 ## Citations
 ```
-@article{sheng2023fairness,
-  title={Fairness in serving large language models},
-  author={Sheng, Ying and Cao, Shiyi and Li, Dacheng and Zhu, Banghua and Li, Zhuohan and Zhuo, Danyang and Gonzalez, Joseph E and Stoica, Ion},
-  journal={arXiv preprint arXiv:2401.00588},
-  year={2023}
-}
-```
-```bibtex
-@misc{sheng2023slora,
-      title={S-LoRA: Serving Thousands of Concurrent LoRA Adapters}, 
-      author={Ying Sheng and Shiyi Cao and Dacheng Li and Coleman Hooper and Nicholas Lee and Shuo Yang and Christopher Chou and Banghua Zhu and Lianmin Zheng and Kurt Keutzer and Joseph E. Gonzalez and Ion Stoica},
-      year={2023},
-      eprint={2311.03285},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@article{fairserve2025,
+  title={FairServe: Ensuring Fair LLM Serving Amid Diverse Applications},
+  author={Anonymous Authors},
+  journal={Under Review},
+  year={2025}
 }
 ```
