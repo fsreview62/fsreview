@@ -1,0 +1,13 @@
+aiohttp
+einops
+fastapi
+ninja
+packaging
+pyzmq
+rpyc
+safetensors
+transformers
+triton==2.1.0
+uvloop
+uvicorn
+psutil

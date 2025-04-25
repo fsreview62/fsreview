@@ -1,0 +1,24 @@
+Metadata-Version: 2.1
+Name: slora
+Version: 1.0.0
+Summary: slora for inference LLM
+Home-page: 
+Author: model toolchain
+Author-email: 
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: Linux
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: aiohttp
+Requires-Dist: einops
+Requires-Dist: fastapi
+Requires-Dist: ninja
+Requires-Dist: packaging
+Requires-Dist: pyzmq
+Requires-Dist: rpyc
+Requires-Dist: safetensors
+Requires-Dist: transformers
+Requires-Dist: triton==2.1.0
+Requires-Dist: uvloop
+Requires-Dist: uvicorn
+Requires-Dist: psutil
